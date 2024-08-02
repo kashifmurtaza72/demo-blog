@@ -1,21 +1,19 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from 'react-redux'
-import { signInStart, signInSuccess, signInFailure } from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { signInStart, signInFailure, signInSuccess } from "../redux/user/userSlice";
 import OAuth from "../components/OAuth";
-
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
   // const [errorMessage, setErrorMessage] = useState(null);
   // const [loading, setLoading] = useState(false);
 
-  const {loading, error:errorMessage} = useSelector((state) => state.user)
-  
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const { loading, error: errorMessage } = useSelector(state => state.user);
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleChange = (event) => {
     //console.log(event.target.value);
     setFormData({ ...formData, [event.target.id]: event.target.value });
@@ -24,7 +22,7 @@ export default function SignIn() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if( !formData.email  || !formData.password) {
+    if(!formData.email  || !formData.password) {
       //return setErrorMessage("Please enter all fields data")
       return dispatch(signInFailure("Please enter all fields data"))
     }
@@ -33,7 +31,7 @@ export default function SignIn() {
     try {
       // setLoading(true);
       // setErrorMessage(null);
-      dispatch(signInStart())
+      dispatch(signInStart());
       const res = await fetch("api/auth/signin", {
         method: "POST",
         headers: {
@@ -45,18 +43,19 @@ export default function SignIn() {
 
       if (data.success === false) {
         //setLoading(false);
+        //return setErrorMessage(data.message);
         dispatch(signInFailure(data.message));
       }
 
       if (res.ok) {
-        dispatch(signInSuccess(data));
+        dispatch(signInSuccess(data))
         navigate("/dashboard?tab=profile");
       }
 
     } catch (error) {
-      dispatch(signInFailure(error.message));
       // setLoading(false);
       // setErrorMessage(error.message);
+      dispatch(signInFailure(error.message));
     }
   };
 
@@ -74,14 +73,14 @@ export default function SignIn() {
             </span>
           </Link>
           <p className="mt-5">
-            This is a 1st demo project. You can signin with email and password
+            This is a 1st demo project. You can singin with email and password
             or using with Google account
           </p>
         </div>
         {/* right part */}
         <div className="flex-1">
           <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-           
+            
 
             <div>
               <Label value="Email" />
@@ -117,7 +116,7 @@ export default function SignIn() {
           </form>
 
           <div className="flex gap-2 text-sm mt-5">
-            <span>Have not an account?</span>
+            <span>Not have an account?</span>
             <Link to="/signup" className="text-blue-500">
               Sign Up
             </Link>

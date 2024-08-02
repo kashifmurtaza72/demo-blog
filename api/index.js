@@ -1,36 +1,43 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import userRoutes from './routes/user.route.js';
-import authRoutes from "./routes/auth.route.js";
-import cookieParser from 'cookie-parser';
-
-
-const app = express();
-app.use(express.json()); // this is going to allow json as the input of the backend.
+import cookieParser from 'cookie-parser'
 dotenv.config();
+
+import userRoutes from "./routes/user.route.js";
+import authRoutes from "./routes/auth.route.js";
+
 
 
 mongoose
   .connect(process.env.MONGOOSE)
-  .then(() => console.log("Database is connected"))
+  .then(() => {
+    console.log("Mongoose db is connected");
+  })
   .catch((err) => {
     console.log(err);
   });
 
-app.use(cookieParser())
-  app.listen(3000, () => {
-  console.log("Server is listening on port 3000");
+const app = express();
+app.use(express.json());
+
+app.use(cookieParser());
+
+app.listen(3000, () => {
+  console.log("Server is listening on the port 3000");
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello World");
-  
+  res.send("Hello world!");
 });
 
-app.use('/api/user/', userRoutes);
-app.use('/api/auth', authRoutes)
+// app.get("/test", (req, res) => {
+//     res.json({message: "API is working successfully"})
+// })
 
+app.use("/api/user/", userRoutes);
+
+app.use("/api/auth/", authRoutes);
 
 app.use((err, req, res, next)=>{
   const statusCode = err.statusCode || 500;
