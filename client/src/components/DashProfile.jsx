@@ -20,8 +20,9 @@ import { useDispatch } from "react-redux";
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { Link } from 'react-router-dom'
 export default function DashProfile() {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   //console.log(currentUser);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
@@ -142,10 +143,10 @@ export default function DashProfile() {
       } else {
         dispatch(deleteUserSuccess(data))
       }
-      
+
     } catch (error) {
       dispatch(deleteUserFailure("Failed to delete user. Please try again later."))
-      
+
     }
   }
 
@@ -156,15 +157,15 @@ export default function DashProfile() {
       })
       const data = await res.json();
 
-      if(!res.ok) {
+      if (!res.ok) {
         dispatch(signoutFailure(data.message))
       } else {
         dispatch(signoutSuccess(data))
       }
-      
+
     } catch (error) {
       dispatch(signoutFailure("Failed to sign out. Please try again later."))
-      
+
     }
   }
 
@@ -201,9 +202,8 @@ export default function DashProfile() {
                   left: 0,
                 },
                 path: {
-                  stroke: `rgba(62, 152, 199, ${
-                    imageFileUploadProgress / 100
-                  })`,
+                  stroke: `rgba(62, 152, 199, ${imageFileUploadProgress / 100
+                    })`,
                 },
               }}
             />
@@ -240,10 +240,22 @@ export default function DashProfile() {
           placeholder="**************"
           onChange={handleChange}
         />
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline>
-          Update
+        <Button type="submit" gradientDuoTone="purpleToBlue" disabled={loading || imageFileUploading} outline>{loading ? 'Loading' : 'Update'}
         </Button>
+
       </form>
+      {currentUser.isAdmin && (
+        <Link to={"/create-post"}>
+          <Button
+            type="button"
+            gradientDuoTone="purpleToPink"
+            className="w-full mt-3"
+          >
+            Create a Post
+          </Button>
+        </Link>
+      )}
+
       <div className="flex justify-between text-red-700 mt-5">
         <span className="cursor-pointer" onClick={() => setShowModal(true)}>
           Delete Account
@@ -274,7 +286,7 @@ export default function DashProfile() {
               <h3>Are you sure, You want to delete your account</h3>
               <div className="flex justify-center gap-4 mt-5">
                 <Button onClick={handleDeleteUser}>Yes, I am Sure</Button>
-                <Button onClick={()=>setShowModal(false)}>No, Cancel</Button>
+                <Button onClick={() => setShowModal(false)}>No, Cancel</Button>
               </div>
             </div>
           </Modal.Body>
