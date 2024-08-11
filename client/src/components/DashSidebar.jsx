@@ -39,11 +39,33 @@ export default function DashSidebar() {
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup>
-          <Sidebar.Item active={tab === "profile"} icon={HiUser} as={"div"}>
-            <Link to="/dashboard?tab=profile">Profile</Link>
-          </Sidebar.Item>
+          <Link to="/dashboard?tab=profile">
+            <Sidebar.Item
+              active={tab === "profile"}
+              icon={HiUser}
+              as={"div"}
+              label={currentUser.isAdmin ? "Admin" : "User"}
+            >
+              Profile
+            </Sidebar.Item>
+          </Link>
         </Sidebar.ItemGroup>
+      </Sidebar.Items>
 
+      {currentUser.isAdmin && (
+        <Sidebar.Items>
+          <Sidebar.ItemGroup>
+            <Sidebar.Item
+              active={tab === "posts"}
+              icon={HiDocumentText}
+              labelColor="dark"
+            >
+              <Link to="/dashboard?tab=posts">Posts</Link>
+            </Sidebar.Item>
+          </Sidebar.ItemGroup>
+        </Sidebar.Items>
+      )}
+      <Sidebar.Items>
         <Sidebar.ItemGroup>
           <Sidebar.Item icon={HiArrowSmRight} as={"div"}>
             <Link to="#" onClick={handleSignout}>
@@ -51,21 +73,6 @@ export default function DashSidebar() {
             </Link>
           </Sidebar.Item>
         </Sidebar.ItemGroup>
-
-        {currentUser.isAdmin && (
-          <Link to="/dashboard?tab=posts">
-            <Sidebar.ItemGroup>
-              <Sidebar.Item
-                active={tab === "posts"}
-                icon={HiDocumentText}
-                labelColor="dark"
-                as="div"
-              >
-                Posts
-              </Sidebar.Item>
-            </Sidebar.ItemGroup>
-          </Link>
-        )}
       </Sidebar.Items>
     </Sidebar>
   );
