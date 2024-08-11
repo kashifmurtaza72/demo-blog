@@ -1,4 +1,5 @@
 import { Alert, Button, FileInput, Select, TextInput } from "flowbite-react";
+
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import {
@@ -11,15 +12,16 @@ import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import DashSidebar from "../components/DashSidebar";
+import { useNavigate } from "react-router-dom";
 export default function CreatePost() {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
-  const [publishError, setPublishError] = useState(null);
-  const navigate = useNavigate();
+  const [publishError, setPublishError] = useState(null)
+  const navigate = useNavigate()
+
+
   const handleUploadImage = async () => {
     try {
       if (!file) {
@@ -57,61 +59,57 @@ export default function CreatePost() {
       console.log(error);
     }
   };
-//console.log(formData)
-const handleSubmit = async(e) => {
-  e.preventDefault();
-  try {
-    const res = await fetch("/api/post/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-    const data = await res.json();
+  //console.log(formData)
 
-    if (!res.ok) {
-      setPublishError(data.message)
-      return;
-    }
-    if (res.ok) {
-      setPublishError(null)
-      navigate(`/post/${data._id}`)
+  const handleSubmit = async(e) => {
+    e.preventDefault()
 
+    try {
+      const res = await fetch("/api/post/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+      const data = await res.json()
+
+      if (res.ok) {
+        setPublishError(null)
+        navigate(`/post/${data.slug}`)
+      }
+      
+    } catch (error) {
+      setPublishError("Failed to publish post")
+      console.log(error)
+      
     }
-    
-  } catch (error) {
-    setPublishError("Failed to publish post");
-    console.log(error);
-    
+
   }
 
-}
   return (
-    <div className="min-h-screen max-w-xl mx-auto my-5 px-5">
-      <h1 className="text-center text-3xl font-semibold">Create Post</h1>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-        <TextInput
-          placeholder="Title"
-          id="title"
-          type="text"
-          required
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-        />
-        <Select onChange={(e)=>setFormData({...formData, category: e.target.value})}>
-          <option value="uncategorized">Select Category</option>
+    <div className="min-h-screen mx-auto max-w-3xl">
+      <h1 className="text-center font-bold my-7">Create a POST</h1>
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
+        <TextInput type="text" placeholder="Title" required id="title" onChange={(e)=>setFormData({...formData, title : e.target.value})}/>
+
+        <Select onChange={(e)=>setFormData({...formData, category : e.target.value})}>
+          <option value="uncategorized">Select a Category</option>
           <option value="javascript">Javascript</option>
           <option value="react">React</option>
-          <option value="nextjs">NextJS</option>
+          <option value="Nodejs">NodeJS</option>
         </Select>
-        <div className="flex justify-between items-center border-4 border-teal-500 p-3 gap-4 rounded-lg">
+
+        <div className="flex justify-between items-center border-4 rounded border-teal-500 border-dotted p-3">
           <FileInput
-            accept="image/*"
             type="file"
+            accept="image/*"
             onChange={(e) => setFile(e.target.files[0])}
           />
           <Button
             type="button"
+            gradientDuoTone="purpleToBlue"
+            outline
             onClick={handleUploadImage}
             disabled={imageUploadProgress}
           >
@@ -121,26 +119,28 @@ const handleSubmit = async(e) => {
                   value={imageUploadProgress}
                   text={`${imageUploadProgress || 0}%`}
                 />
-                <span className="text-gray-500">Uploading Image</span>
               </div>
             ) : (
               "Upload Image"
             )}
           </Button>
         </div>
-        {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
-        {formData.image && (
-          <img
-            src={formData.image}
-            alt="Uploaded Image"
-            className="w-full h-64 object-cover"
-          />
-        )}
-        <ReactQuill theme="snow" className="h-72 mb-12"  onChange={(e)=>setFormData({...formData, content:e})} />
+
+        {imageUploadError && 
+        <Alert color='failure'>
+          {imageUploadError}
+        </Alert>
+        
+        }
+
+        {formData.image && 
+          <img src={formData.image} alt="uploaded-image" className="object-contain"/>
+        }         
+
+        <ReactQuill theme="snow" className="h-52 mb-12" onChange={(value)=>setFormData({...formData, content : value})}/>
         <Button type="submit" gradientDuoTone="purpleToPink">
           Publish
         </Button>
-        {publishError && <Alert color="failure">{publishError}</Alert>}
       </form>
     </div>
   );
