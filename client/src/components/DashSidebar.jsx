@@ -58,6 +58,7 @@ export default function DashSidebar() {
             <Sidebar.Item
               active={tab === "posts"}
               icon={HiDocumentText}
+              as={"div"}
               labelColor="dark"
             >
               <Link to="/dashboard?tab=posts">Posts</Link>
